@@ -33,8 +33,10 @@ During this project, we deepened our knowledge in the following areas:
 - AWS S3
 - AWS IAM Roles
 - AWS CloudFront
-- Python 3
+- Python 3(lambda function)
 - Git / GitHub
+- Java / Springboot
+- MySQL
 
 ---
 
