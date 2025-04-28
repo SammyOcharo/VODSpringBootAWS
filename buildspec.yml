@@ -1,0 +1,34 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+      docker: latest
+    commands:
+      - echo "Installing dependencies..."
+      - chmod +x mvnw
+
+  pre_build:
+    commands:
+      - echo "Logging into AWS ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
+      - IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+
+  build:
+    commands:
+      - echo "Building the application.."
+      - ./mvnw clean package -DskipTests
+      - echo "Building the Docker image.."
+      - docker build -t $IMAGE_URI
+
+  post_build:
+    commands:
+      - echo "Pushing the Docker image to ECR..."
+      - docker push $IMAGE_URI
+      - echo "Build and push completed successfully!"
+
+
+artifacts:
+  files:
+    - '**/*'
